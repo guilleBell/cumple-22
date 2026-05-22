@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Late Twenty-Two</title>
+    <style>
+        :root {
+            --primary: #d4af37; /* Dorado */
+            --bg-overlay: rgba(0, 0, 0, 0.6);
+            --text-light: #f4f4f4;
+        }
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            height: 100%;
+            color: var(--text-light);
+        }
+
+        /* Reemplaza la URL por tu foto */
+        .hero {
+            background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=2069');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 40px;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 40px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            margin-bottom: 30px;
+        }
+
+        .info-box p {
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        .info-box a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .info-box a:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s, opacity 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        /* Modales */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #fff;
+            color: #333;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            text-align: left;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"], 
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .checkbox-group label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn-group button {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-confirm { background: #28a745; color: white; }
+        .btn-cancel { background: #dc3545; color: white; }
+        
+        .confirm-dialog {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <h1>Late Twenty-Two</h1>
+        <h2>Estás invitado a celebrar conmigo</h2>
+
+        <div class="info-box">
+            <p>📅 Día: <strong>29/05</strong></p>
+            <p>⏰ Hora: <strong>20:30 hs</strong></p>
+            <p>📍 Lugar: <a href="https://maps.google.com/?q=Nombre+del+Bar+Ciudad" target="_blank">Nombre del Bar (Ver mapa)</a></p>
+        </div>
+
+        <div>
+            <!-- Reemplaza el href con el link real de la carta del bar -->
+            <a href="https://link-a-la-carta-del-bar.com" target="_blank" class="btn btn-outline">Ver carta del bar</a>
+            <button class="btn" onclick="openModal('rsvpModal')">Confirmar Asistencia</button>
+        </div>
+    </div>
+
+    <!-- Modal del Formulario -->
+    <div id="rsvpModal" class="modal">
+        <div class="modal-content">
+            <h3>Completá tus datos</h3>
+            <form id="rsvpForm">
+                <div class="form-group">
+                    <label>Nombre y Apellido</label>
+                    <input type="text" id="nombre" required placeholder="Ej: Juan Pérez">
+                </div>
+                
+                <div class="form-group">
+                    <label>Menú</label>
+                    <select id="menu" required>
+                        <option value="Pizza Libre">Pizza libre</option>
+                        <option value="Aparte">Consumo algo aparte</option>
+                        <option value="No come">No voy a comer en el bar</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Restricciones alimentarias (Opcional)</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="restriccion" value="Celiaquía"> Celiaquía</label>
+                        <label><input type="checkbox" name="restriccion" value="Intolerancia Lactosa"> Intolerancia a la lactosa</label>
+                        <label><input type="checkbox" name="restriccion" value="Vegano/Vegetariano"> Vegano/Vegetariano</label>
+                        <label>Otro: <input type="text" id="restriccionOtro" style="width: 100%; margin-top:5px;"></label>
+                    </div>
+                </div>
+
+                <button type="button" class="btn" style="width: 100%; margin: 15px 0 0 0;" onclick="intentarConfirmar()">Confirmar asistencia</button>
+                <button type="button" class="btn btn-outline" style="width: 100%; margin: 10px 0 0 0; color: #333; border-color: #ccc;" onclick="closeModal('rsvpModal')">Cerrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación Segura -->
+    <div id="confirmDialog" class="modal">
+        <div class="modal-content confirm-dialog">
+            <h3>¿Estás seguro que quieres confirmar asistencia?</h3>
+            <div class="btn-group">
+                <button class="btn-cancel" onclick="cancelarConfirmacion()">Cancelar</button>
+                <button class="btn-confirm" onclick="enviarDatos()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL de tu Google Apps Script (lo configuraremos en el paso 2)
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyk7idxeen6RBOH4YWU3QY8wxopDNMyOW4ta22oYrW92Fx1Dsn6ybCiG-NBiqXHV6pp/exec';
+
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function intentarConfirmar() {
+            // Validar que el nombre esté completo antes de mostrar el popup
+            if(document.getElementById('nombre').value.trim() === "") {
+                alert("Por favor, ingresá tu nombre y apellido.");
+                return;
+            }
+            openModal('confirmDialog');
+        }
+
+        function cancelarConfirmacion() {
+            closeModal('confirmDialog');
+            // Cierra también el formulario completo según tu requerimiento
+            closeModal('rsvpModal');
+        }
+
+        function enviarDatos() {
+            const nombre = document.getElementById('nombre').value;
+            const menu = document.getElementById('menu').value;
+            
+            // Recopilar restricciones
+            const restriccionesNodes = document.querySelectorAll('input[name="restriccion"]:checked');
+            let restricciones = Array.from(restriccionesNodes).map(cb => cb.value);
+            const otro = document.getElementById('restriccionOtro').value.trim();
+            if (otro !== "") restricciones.push(otro);
+            
+            const restriccionesStr = restricciones.length > 0 ? restricciones.join(", ") : "Ninguna";
+
+            // Mostrar estado de carga
+            document.querySelector('.btn-confirm').innerText = "Enviando...";
+            document.querySelector('.btn-confirm').disabled = true;
+
+            // Petición a Google Sheets
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nombre: nombre,
+                    menu: menu,
+                    restricciones: restriccionesStr
+                })
+            })
+            .then(() => {
+                alert("¡Asistencia confirmada! Nos vemos el 29.");
+                document.getElementById('rsvpForm').reset();
+                closeModal('confirmDialog');
+                closeModal('rsvpModal');
+                document.querySelector('.btn-confirm').innerText = "Confirmar";
+                document.querySelector('.btn-confirm').disabled = false;
+            })
+            .catch(error => {
+                alert("Hubo un error al enviar. Por favor intentá de nuevo.");
+                console.error('Error!', error.message);
+                document.querySelector('.btn-confirm').innerText = "Confirmar";
+                document.querySelector('.btn-confirm').disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
