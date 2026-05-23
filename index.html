@@ -243,18 +243,15 @@
             <p class="deadline">⏳ Por favor, confirmá tu asistencia <strong>antes del 27/05</strong></p>
         </div>
 
-        <div class="action-buttons">
-            <button class="btn btn-outline" onclick="openModal('infoModal')">¿Cómo pedir y pagar?</button>
-            <a href="https://brooklyn.listopos.com.ar/" target="_blank" class="btn btn-outline">Ver carta del bar</a>
-            <button class="btn" onclick="openModal('rsvpModal')">Confirmar Asistencia</button>
+        <div class="action-buttons" style="display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; max-width: 320px; margin: 0 auto;">
+            <button class="btn btn-outline" style="width: 100%; margin: 0;" onclick="openModal('infoModal')">¿Cómo pedir y pagar?</button>
+            <a href="https://brooklyn.listopos.com.ar/" target="_blank" class="btn btn-outline" style="width: 100%; box-sizing: border-box; margin: 0;">Ver carta del bar</a>
+            <button class="btn" style="width: 100%; margin: 5px 0 0 0;" onclick="openModal('rsvpModal')">Confirmar Asistencia</button>
+            
+            <p style="margin-top: 10px; font-size: 0.95rem; color: #ddd;">
+                ¿No podés asistir? <a href="#" onclick="openModal('bajaModal'); return false;" style="color: #ff6b6b; font-weight: bold; text-decoration: underline;">Dar de baja</a>
+            </p>
         </div>
-
-        <!-- Nueva sección de baja movida más arriba -->
-        <div class="baja-section">
-            <p>¿Te surgieron inconvenientes y no podés asistir?</p>
-            <button class="btn-baja" onclick="openModal('bajaModal')">Dar de Baja</button>
-        </div>
-    </div>
 
     <!-- Modal de Info del Bar -->
     <div id="infoModal" class="modal">
