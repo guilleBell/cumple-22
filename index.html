@@ -28,7 +28,7 @@
         }
         
         .hero {
-            background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('foto origi.jpeg');
+            background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('foto-origi.jpeg');
             background-size: cover;
             background-position: center;
             min-height: 100vh;
@@ -255,13 +255,18 @@
             <h3>Completá tus datos</h3>
             <form id="rsvpForm">
                 <div class="form-group">
-                    <label>Nombre y Apellido</label>
-                    <input type="text" id="nombre" required placeholder="Ej: Juan Pérez">
+                    <label>Nombre</label>
+                    <input type="text" id="nombre" required placeholder="Ej: Juan">
+                </div>
+                
+                <div class="form-group">
+                    <label>Apellido</label>
+                    <input type="text" id="apellido" required placeholder="Ej: Pérez">
                 </div>
                 
                 <div class="form-group">
                     <label>Menú</label>
-                    <p style="font-size: 0.85rem; color: #555; margin: 0 0 10px 0;">*El precio del menú de pizza libre es de $14.000</p>
+                    <p style="font-size: 0.85rem; color: #555; margin: 0 0 10px 0;">*El precio del menú libre es de $14.000</p>
                     <select id="menu" required>
                         <option value="Menu LIBRE">Pizza y papas libres</option>
                         <option value="Aparte">Consumo algo aparte</option>
@@ -327,8 +332,12 @@
 
         // Lógica para confirmar asistencia
         function intentarConfirmar() {
-            if(document.getElementById('nombre').value.trim() === "") {
-                alert("Por favor, ingresá tu nombre y apellido.");
+            const nombre = document.getElementById('nombre').value.trim();
+            const apellido = document.getElementById('apellido').value.trim();
+            
+            // Si el nombre o el apellido están vacíos, frena y avisa
+            if(nombre === "" || apellido === "") {
+                alert("Debes completar todos los campos para confirmar tu asistencia al evento.");
                 return;
             }
             openModal('confirmDialog');
@@ -340,7 +349,11 @@
         }
 
         function enviarDatos() {
-            const nombre = document.getElementById('nombre').value;
+            // Tomamos nombre y apellido por separado y los unimos
+            const nombreInput = document.getElementById('nombre').value.trim();
+            const apellidoInput = document.getElementById('apellido').value.trim();
+            const nombreCompleto = nombreInput + " " + apellidoInput;
+            
             const menu = document.getElementById('menu').value;
             
             const restriccionesNodes = document.querySelectorAll('input[name="restriccion"]:checked');
@@ -354,12 +367,13 @@
             btnConfirm.innerText = "Enviando...";
             btnConfirm.disabled = true;
 
+            // Petición a Google Sheets (acá usamos nombreCompleto)
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    nombre: nombre,
+                    nombre: nombreCompleto, /* Mandamos el nombre y apellido juntos al Excel */
                     menu: menu,
                     restricciones: restriccionesStr
                 })
