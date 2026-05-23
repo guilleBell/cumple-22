@@ -19,10 +19,11 @@
         body, html {
             margin: 0;
             padding: 0;
-            font-family: 'Montserrat', sans-serif; /* <-- Cambio principal */
+            font-family: 'Montserrat', sans-serif;
             height: 100%;
             color: var(--text-light);
         }
+        
         h1, h2, h3 {
             font-family: 'Playfair Display', serif;
         }
@@ -41,7 +42,7 @@
             box-sizing: border-box;
         }
 
-      h1 {
+        h1 {
             font-size: 4rem;
             margin-bottom: 10px;
             letter-spacing: 1px;
@@ -60,7 +61,7 @@
             padding: 20px 40px;
             border-radius: 10px;
             backdrop-filter: blur(5px);
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .info-box p {
@@ -86,16 +87,20 @@
             padding-top: 15px;
         }
 
+        .action-buttons {
+            margin-bottom: 15px;
+        }
+
         .btn {
             background-color: var(--primary);
             color: #000;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.1rem;
+            padding: 15px 25px;
+            font-size: 1.05rem;
             font-weight: bold;
             border-radius: 25px;
             cursor: pointer;
-            margin: 10px;
+            margin: 8px;
             transition: transform 0.2s, opacity 0.2s;
             text-decoration: none;
             display: inline-block;
@@ -113,10 +118,11 @@
         }
 
         .baja-section {
-            margin-top: 40px;
-            padding-top: 20px;
+            margin-top: 10px;
+            padding-top: 15px;
             border-top: 1px solid rgba(255,255,255,0.2);
             max-width: 400px;
+            width: 100%;
         }
 
         .baja-section p {
@@ -127,8 +133,8 @@
 
         .btn-baja {
             background-color: transparent;
-            color: #dc3545;
-            border: 2px solid #dc3545;
+            color: #ff6b6b;
+            border: 2px solid #ff6b6b;
             padding: 10px 25px;
             font-size: 1rem;
             font-weight: bold;
@@ -138,7 +144,7 @@
         }
 
         .btn-baja:hover {
-            background-color: #dc3545;
+            background-color: #ff6b6b;
             color: white;
         }
 
@@ -231,21 +237,38 @@
         <h2>Estás invitado a celebrar conmigo</h2>
 
         <div class="info-box">
-            <p> Día: <strong>29/05</strong></p>
-            <p> Hora: <strong>20:30 hs</strong></p>
-            <p> Lugar: <a href="https://maps.app.goo.gl/ZNjusoVQjXvGuZsH8" target="_blank">Brooklyn Bar (Ver mapa)</a></p>
+            <p>Día: <strong>29/05</strong></p>
+            <p>Hora: <strong>20:30 hs</strong></p>
+            <p>Lugar: <a href="https://maps.app.goo.gl/ZNjusoVQjXvGuZsH8" target="_blank">Brooklyn Bar (Ver mapa)</a></p>
             <p class="deadline">⏳ Por favor, confirmá tu asistencia <strong>antes del 27/05</strong></p>
         </div>
 
-        <div>
+        <div class="action-buttons">
+            <button class="btn btn-outline" onclick="openModal('infoModal')">¿Cómo pedir y pagar?</button>
             <a href="https://brooklyn.listopos.com.ar/" target="_blank" class="btn btn-outline">Ver carta del bar</a>
             <button class="btn" onclick="openModal('rsvpModal')">Confirmar Asistencia</button>
         </div>
 
-        <!-- Nueva sección de baja -->
+        <!-- Nueva sección de baja movida más arriba -->
         <div class="baja-section">
-            <p>¿Te surgieron inconvenientes y no podés asistir al evento?</p>
+            <p>¿Te surgieron inconvenientes y no podés asistir?</p>
             <button class="btn-baja" onclick="openModal('bajaModal')">Dar de Baja</button>
+        </div>
+    </div>
+
+    <!-- Modal de Info del Bar -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px;">Pedidos y Pagos</h3>
+            <p style="font-size: 0.95rem; line-height: 1.5; color: #444; margin-bottom: 15px;">
+                Para que sea más cómodo y cada uno pague lo suyo sin líos al final de la noche, el bar se maneja con su propia app. <strong>Es súper fácil:</strong>
+            </p>
+            <ul style="font-size: 0.95rem; line-height: 1.5; color: #444; padding-left: 20px; margin-bottom: 20px;">
+                <li style="margin-bottom: 10px;"><strong>Te registrás</strong> en su plataforma al llegar (es rápido).</li>
+                <li style="margin-bottom: 10px;"><strong>Pedís</strong> lo que quieras consumir directamente desde tu celular.</li>
+                <li><strong>Pagás</strong> todo junto desde la misma app, o te acercás a la caja y pagás dando tu nombre.</li>
+            </ul>
+            <button type="button" class="btn btn-outline" style="width: 100%; margin: 0; color: #333; border-color: #ccc;" onclick="closeModal('infoModal')">Entendido</button>
         </div>
     </div>
 
@@ -335,7 +358,6 @@
             const nombre = document.getElementById('nombre').value.trim();
             const apellido = document.getElementById('apellido').value.trim();
             
-            // Si el nombre o el apellido están vacíos, frena y avisa
             if(nombre === "" || apellido === "") {
                 alert("Debes completar todos los campos para confirmar tu asistencia al evento.");
                 return;
@@ -349,7 +371,6 @@
         }
 
         function enviarDatos() {
-            // Tomamos nombre y apellido por separado y los unimos
             const nombreInput = document.getElementById('nombre').value.trim();
             const apellidoInput = document.getElementById('apellido').value.trim();
             const nombreCompleto = nombreInput + " " + apellidoInput;
@@ -367,13 +388,12 @@
             btnConfirm.innerText = "Enviando...";
             btnConfirm.disabled = true;
 
-            // Petición a Google Sheets (acá usamos nombreCompleto)
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    nombre: nombreCompleto, /* Mandamos el nombre y apellido juntos al Excel */
+                    nombre: nombreCompleto,
                     menu: menu,
                     restricciones: restriccionesStr
                 })
@@ -407,7 +427,6 @@
             btnBaja.innerText = "Enviando...";
             btnBaja.disabled = true;
 
-            // Enviamos los datos con un menú específico para identificarlo en el Excel
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
