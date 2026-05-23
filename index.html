@@ -24,13 +24,14 @@
             background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url('https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=2069');
             background-size: cover;
             background-position: center;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             padding: 20px;
+            box-sizing: border-box;
         }
 
         h1 {
@@ -43,7 +44,7 @@
         h2 {
             font-size: 1.5rem;
             font-weight: 300;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         .info-box {
@@ -67,6 +68,14 @@
 
         .info-box a:hover {
             text-decoration: underline;
+        }
+
+        .deadline {
+            color: #ffcccc;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 15px;
         }
 
         .btn {
@@ -93,6 +102,36 @@
             background-color: transparent;
             color: var(--primary);
             border: 2px solid var(--primary);
+        }
+
+        .baja-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            max-width: 400px;
+        }
+
+        .baja-section p {
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+
+        .btn-baja {
+            background-color: transparent;
+            color: #dc3545;
+            border: 2px solid #dc3545;
+            padding: 10px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-baja:hover {
+            background-color: #dc3545;
+            color: white;
         }
 
         /* Modales */
@@ -169,7 +208,8 @@
         }
 
         .btn-confirm { background: #28a745; color: white; }
-        .btn-cancel { background: #dc3545; color: white; }
+        .btn-cancel { background: #6c757d; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
         
         .confirm-dialog {
             text-align: center;
@@ -186,12 +226,18 @@
             <p>📅 Día: <strong>29/05</strong></p>
             <p>⏰ Hora: <strong>20:30 hs</strong></p>
             <p>📍 Lugar: <a href="https://maps.app.goo.gl/ZNjusoVQjXvGuZsH8" target="_blank">Brooklyn Bar (Ver mapa)</a></p>
+            <p class="deadline">⏳ Por favor, confirmá tu asistencia <strong>antes del 27/05</strong></p>
         </div>
 
         <div>
-            <!-- Reemplaza el href con el link real de la carta del bar -->
             <a href="https://brooklyn.listopos.com.ar/" target="_blank" class="btn btn-outline">Ver carta del bar</a>
             <button class="btn" onclick="openModal('rsvpModal')">Confirmar Asistencia</button>
+        </div>
+
+        <!-- Nueva sección de baja -->
+        <div class="baja-section">
+            <p>¿Te surgieron inconvenientes y no podés asistir al evento?</p>
+            <button class="btn-baja" onclick="openModal('bajaModal')">Dar de Baja</button>
         </div>
     </div>
 
@@ -241,8 +287,25 @@
         </div>
     </div>
 
+    <!-- Modal de Baja -->
+    <div id="bajaModal" class="modal">
+        <div class="modal-content confirm-dialog">
+            <h3 style="color: #dc3545; margin-bottom: 5px;">Se te va a echar de menos :(</h3>
+            <p style="margin-bottom: 20px; font-size: 0.9rem;">Por favor, ingresá tu nombre para registrar la baja:</p>
+            
+            <div class="form-group">
+                <input type="text" id="nombreBaja" required placeholder="Tu Nombre y Apellido">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-cancel" onclick="closeModal('bajaModal')">Volver</button>
+                <button class="btn-danger" onclick="enviarBaja()" id="btnSubmitBaja">Dar de baja</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // URL de tu Google Apps Script (lo configuraremos en el paso 2)
+        // Tu URL de Google Apps Script original
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyk7idxeen6RBOH4YWU3QY8wxopDNMyOW4ta22oYrW92Fx1Dsn6ybCiG-NBiqXHV6pp/exec';
 
         function openModal(id) {
@@ -253,8 +316,8 @@
             document.getElementById(id).style.display = 'none';
         }
 
+        // Lógica para confirmar asistencia
         function intentarConfirmar() {
-            // Validar que el nombre esté completo antes de mostrar el popup
             if(document.getElementById('nombre').value.trim() === "") {
                 alert("Por favor, ingresá tu nombre y apellido.");
                 return;
@@ -264,7 +327,6 @@
 
         function cancelarConfirmacion() {
             closeModal('confirmDialog');
-            // Cierra también el formulario completo según tu requerimiento
             closeModal('rsvpModal');
         }
 
@@ -272,7 +334,6 @@
             const nombre = document.getElementById('nombre').value;
             const menu = document.getElementById('menu').value;
             
-            // Recopilar restricciones
             const restriccionesNodes = document.querySelectorAll('input[name="restriccion"]:checked');
             let restricciones = Array.from(restriccionesNodes).map(cb => cb.value);
             const otro = document.getElementById('restriccionOtro').value.trim();
@@ -280,17 +341,14 @@
             
             const restriccionesStr = restricciones.length > 0 ? restricciones.join(", ") : "Ninguna";
 
-            // Mostrar estado de carga
-            document.querySelector('.btn-confirm').innerText = "Enviando...";
-            document.querySelector('.btn-confirm').disabled = true;
+            const btnConfirm = document.querySelector('.btn-confirm');
+            btnConfirm.innerText = "Enviando...";
+            btnConfirm.disabled = true;
 
-            // Petición a Google Sheets
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     nombre: nombre,
                     menu: menu,
@@ -302,14 +360,53 @@
                 document.getElementById('rsvpForm').reset();
                 closeModal('confirmDialog');
                 closeModal('rsvpModal');
-                document.querySelector('.btn-confirm').innerText = "Confirmar";
-                document.querySelector('.btn-confirm').disabled = false;
+                btnConfirm.innerText = "Confirmar";
+                btnConfirm.disabled = false;
             })
             .catch(error => {
                 alert("Hubo un error al enviar. Por favor intentá de nuevo.");
                 console.error('Error!', error.message);
-                document.querySelector('.btn-confirm').innerText = "Confirmar";
-                document.querySelector('.btn-confirm').disabled = false;
+                btnConfirm.innerText = "Confirmar";
+                btnConfirm.disabled = false;
+            });
+        }
+
+        // Lógica para dar de baja
+        function enviarBaja() {
+            const nombreBaja = document.getElementById('nombreBaja').value.trim();
+            
+            if(nombreBaja === "") {
+                alert("Por favor, ingresá tu nombre para poder registrar la baja.");
+                return;
+            }
+
+            const btnBaja = document.getElementById('btnSubmitBaja');
+            btnBaja.innerText = "Enviando...";
+            btnBaja.disabled = true;
+
+            // Enviamos los datos con un menú específico para identificarlo en el Excel
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nombre: nombreBaja,
+                    menu: "CANCELÓ ASISTENCIA",
+                    restricciones: "-"
+                })
+            })
+            .then(() => {
+                alert("Baja registrada correctamente. ¡Gracias por avisar!");
+                document.getElementById('nombreBaja').value = "";
+                closeModal('bajaModal');
+                btnBaja.innerText = "Dar de baja";
+                btnBaja.disabled = false;
+            })
+            .catch(error => {
+                alert("Hubo un error al enviar. Por favor intentá de nuevo.");
+                console.error('Error!', error.message);
+                btnBaja.innerText = "Dar de baja";
+                btnBaja.disabled = false;
             });
         }
     </script>
